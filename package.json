@@ -1,0 +1,16 @@
+{
+  "name": "browser-rendering-cli",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@puppeteer/browsers": "^2.13.0",
+    "puppeteer-core": "^24.39.1"
+  }
+}
