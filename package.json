@@ -9,6 +9,9 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "scripts": {
+    "build": "bun build index.ts --compile --outfile brow"
+  },
   "dependencies": {
     "@puppeteer/browsers": "^2.13.0",
     "puppeteer-core": "^24.39.1"
