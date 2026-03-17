@@ -45,7 +45,41 @@ export const excalidrawRenderer: Renderer<ExcalidrawConfig> = {
     console.log("Injecting Excalidraw renderer...");
     await page.addScriptTag({ url: "https://unpkg.com/react@18.2.0/umd/react.production.min.js" });
     await page.addScriptTag({ url: "https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" });
-    await page.addScriptTag({ url: "https://unpkg.com/@excalidraw/excalidraw@0.14.2/dist/excalidraw.production.min.js" });
+    await page.addScriptTag({ url: "https://unpkg.com/@excalidraw/excalidraw@0.17.3/dist/excalidraw.production.min.js" });
+
+    // Load Excalidraw fonts so text renders correctly in both DOM and canvas
+    await page.evaluate(async () => {
+      const fontBase = "https://unpkg.com/@excalidraw/excalidraw@0.17.3/dist/excalidraw-assets";
+      const fonts = [
+        ["Virgil", `${fontBase}/Virgil.woff2`],
+        ["Cascadia", `${fontBase}/Cascadia.woff2`],
+      ];
+      for (const [name, url] of fonts) {
+        try {
+          const font = new FontFace(name, `url(${url})`);
+          await font.load();
+          document.fonts.add(font);
+        } catch {}
+      }
+      await document.fonts.ready;
+
+      // Force fonts into canvas by rendering invisible text with each font.
+      // Without this, canvas text measurement returns incorrect metrics.
+      const el = document.createElement("div");
+      el.style.position = "absolute";
+      el.style.left = "-9999px";
+      el.style.visibility = "hidden";
+      for (const [name] of fonts) {
+        const span = document.createElement("span");
+        span.style.fontFamily = name;
+        span.style.fontSize = "20px";
+        span.textContent = "Font preload";
+        el.appendChild(span);
+      }
+      document.body.appendChild(el);
+      // Wait for a frame to ensure fonts are rasterized
+      await new Promise((r) => requestAnimationFrame(r));
+    });
 
     console.log("Rendering...");
     const base64Data = await page.evaluate(
