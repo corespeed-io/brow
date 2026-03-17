@@ -4,6 +4,48 @@ import { renderers } from "./renderers/registry.ts";
 
 const args = Bun.argv.slice(2);
 
+function printHelp() {
+  console.log(`brow - Browser-based rendering CLI
+
+Usage: brow [command] [options]
+
+Commands:
+  browser install              Download and install a managed browser
+
+Global Options:
+  -m, --mode <mode>            Rendering mode: ${Object.keys(renderers).join(", ")} (default: web)
+  -o, --output <path>          Output file path (required)
+      --browser <path>         Path to browser executable
+  -h, --help                   Show this help message
+
+Web Mode (default):
+  ${renderers.web.description}
+  -u, --url <url>              URL to screenshot (required)
+      --width <pixels>         Viewport width (default: 1280)
+      --height <pixels>        Viewport height (default: 800)
+      --full-page              Capture full scrollable page (default: true)
+  -s, --scale <factor>         Device scale factor (default: 1)
+
+Excalidraw Mode:
+  ${renderers.excalidraw.description}
+  -i, --input <path>           Path to .excalidraw file (required)
+  -t, --theme <theme>          Theme: light or dark (default: light)
+  -s, --scale <factor>         Scale multiplier (default: 1)
+      --width <pixels>         Explicit output width
+      --height <pixels>        Explicit output height
+
+Examples:
+  brow -u https://example.com -o screenshot.png
+  brow -m excalidraw -i drawing.excalidraw -o output.png
+  brow browser install`);
+}
+
+// Show help when no arguments provided
+if (args.length === 0) {
+  printHelp();
+  process.exit(0);
+}
+
 // Handle "browser" subcommand
 if (args[0] === "browser") {
   if (args[1] === "install") {
@@ -39,21 +81,7 @@ if (!renderer) {
 
 // Show help if requested
 if (baseValues.help) {
-  console.log(`Usage: brow -m <mode> -o <output> [options]\n`);
-  console.log("Commands:");
-  console.log("  browser install         Install a managed browser\n");
-  console.log("Global options:");
-  console.log("  -m, --mode <mode>       Rendering mode (default: web)");
-  console.log("  -o, --output <path>     Output file path (required)");
-  console.log("  --browser <path>        Path to browser executable");
-  console.log("  -h, --help              Show this help message\n");
-  console.log(`Mode "${mode}": ${renderer.description}`);
-  console.log("Options:");
-  for (const [name, opt] of Object.entries(renderer.options)) {
-    const short = opt.short ? `-${opt.short}, ` : "    ";
-    const def = "default" in opt ? ` (default: ${opt.default})` : "";
-    console.log(`  ${short}--${name}${def}`);
-  }
+  printHelp();
   process.exit(0);
 }
 
