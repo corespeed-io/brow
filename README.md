@@ -8,7 +8,14 @@ files to images using headless Chrome.
 ## Install
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/corespeed-io/brow/main/install.sh | bash
+```
+
+### Build from source
+
+```bash
 bun install
+bun run build
 ```
 
 ## Browser setup
